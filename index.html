@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Die & Coin</title>
+    <style>
+        body {
+            margin: 0;
+            background: #2ecc71;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .mesa {
+            display: flex;
+            gap: 50px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .dado,
+        .moeda {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 10px;
+            font-size: 40px;
+            font-weight: bold;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+            transform-style: preserve-3d;
+            transition: transform 1s ease;
+        }
+
+        .moeda {
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            background: #27ae60;
+            color: white;
+        }
+
+        button:hover {
+            background: #1e8449;
+        }
+
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        #resultado {
+            margin-top: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .botoes-linha {
+            margin-bottom: 10px;
+        }
+
+        @keyframes girarDado {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(1800deg);
+            }
+        }
+
+        @keyframes girarMoeda {
+            0% {
+                transform: rotateY(0deg);
+            }
+
+            100% {
+                transform: rotateY(1800deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="container"></div>
+
+    <script>
+        const app = document.getElementById("app");
+
+        // ---------- FUNÇÃO AUX ----------
+        function randomNumero() {
+            return Math.floor(Math.random() * 6) + 1;
+        }
+
+        // ---------- RESET DE ESTADO ----------
+        function resetarEstado() {
+            window.valoresDados = [null, null]; // dado esquerdo = cara, direito = coroa
+            window.moedaFinal = null;
+        }
+
+        // ---------- RENDER ----------
+        function renderMenu() {
+            resetarEstado();
+            app.innerHTML = `
+    <h1>Escolha a rota</h1>
+    <div class="botoes-linha">
+      <button onclick="navigate('/dados-e-moeda')">🎲 Dados e Moeda</button>
+      <button onclick="navigate('/dados')">🎲 Apenas Dados</button>
+      <button onclick="navigate('/moeda')">🪙 Apenas Cara ou Coroa</button>
+    </div>
+  `;
+        }
+
+        function renderDadosEMoeda() {
+            resetarEstado();
+            app.innerHTML = `
+    <div class="mesa">
+        
+        <div>
+            <div style="padding: 16px;">😀</div>
+            <div id="dado1" class="dado">🎲</div>
+            </div>
+      
+   
+                
+                <div id="moeda" class="moeda">🪙</div>
+           <div>
+                            <div style="padding: 16px;">👑</div>
+      <div id="dado2" class="dado">🎲</div>
+
+                
+                </div>        </div>
+    <div class="botoes-linha">
+      <button id="btnDados" onclick="lancarDados()">🎲 Lançar Dados</button>
+      <button id="btnMoeda" onclick="lancarMoeda()" disabled>🪙 Lançar Moeda</button>
+    </div>
+    <div class="botoes-linha">
+      <button onclick="navigate('/')">⬅ Voltar</button>
+      <button onclick="resetar()">🔄 Resetar Resultado</button>
+    </div>
+    <div id="resultado"></div>
+  `;
+        }
+
+        function renderApenasDados() {
+            resetarEstado();
+            app.innerHTML = `
+    <div class="mesa">
+        <div>
+            <div style="padding: 16px;">😀</div>
+            <div id="dado1" class="dado">🎲</div>
+            </div>
+      
+            <div>
+                            <div style="padding: 16px;">👑</div>
+      <div id="dado2" class="dado">🎲</div>
+
+                
+                </div>
+    </div>
+    <div class="botoes-linha">
+      <button onclick="lancarDadosApenas()">🎲 Lançar Dados</button>
+    </div>
+    <div class="botoes-linha">
+      <button onclick="navigate('/')">⬅ Voltar</button>
+    </div>
+    <div id="resultado"></div>
+  `;
+        }
+
+        function renderApenasMoeda() {
+            resetarEstado();
+            app.innerHTML = `
+    <div class="mesa">
+      <div id="moeda" class="moeda">🪙</div>
+    </div>
+    <div class="botoes-linha">
+      <button onclick="lancarMoedaApenas()">🪙 Lançar Moeda</button>
+    </div>
+    <div class="botoes-linha">
+      <button onclick="navigate('/')">⬅ Voltar</button>
+    </div>
+    <div id="resultado"></div>
+  `;
+        }
+
+        // ---------- FUNÇÕES DADOS E MOEDA ----------
+        function lancarDados() {
+            const d1 = document.getElementById("dado1");
+            const d2 = document.getElementById("dado2");
+            const btnMoeda = document.getElementById("btnMoeda");
+            const moedaEl = document.getElementById("moeda");
+            const resultadoEl = document.getElementById("resultado");
+
+            resultadoEl.innerText = "Jogando dados...";
+            d1.style.animation = "girarDado 1s ease";
+            d2.style.animation = "girarDado 1s ease";
+
+            setTimeout(() => {
+                window.valoresDados[0] = randomNumero(); // cara
+                window.valoresDados[1] = randomNumero(); // coroa
+                d1.innerText = window.valoresDados[0];
+                d2.innerText = window.valoresDados[1];
+                d1.style.animation = "";
+                d2.style.animation = "";
+                resultadoEl.innerText = `🎲 Cara → Dado ${window.valoresDados[0]} | 🎲 Coroa → Dado ${window.valoresDados[1]}`;
+                btnMoeda.disabled = false;
+            }, 1000);
+        }
+
+        function lancarMoeda() {
+            const moedaEl = document.getElementById("moeda");
+            const resultadoEl = document.getElementById("resultado");
+
+            resultadoEl.innerText = "Lançando moeda...";
+            moedaEl.style.animation = "girarMoeda 1s ease";
+
+            setTimeout(() => {
+                window.moedaFinal = Math.random() < 0.5 ? "cara" : "coroa";
+                moedaEl.innerText = window.moedaFinal === "cara" ? "😀" : "🦅";
+                moedaEl.style.animation = "";
+                resultadoEl.innerText =
+                    window.moedaFinal === "cara"
+                        ? `Resultado: Cara → Dado ${window.valoresDados[0]}`
+                        : `Resultado: Coroa → Dado ${window.valoresDados[1]}`;
+            }, 1000);
+        }
+
+        function resetar() {
+            const d1 = document.getElementById("dado1");
+            const d2 = document.getElementById("dado2");
+            const moedaEl = document.getElementById("moeda");
+            const resultadoEl = document.getElementById("resultado");
+            d1.innerText = "🎲";
+            d2.innerText = "🎲";
+            moedaEl.innerText = "🪙";
+            resultadoEl.innerText = "";
+            document.getElementById("btnMoeda").disabled = true;
+            resetarEstado();
+        }
+
+        // ---------- FUNÇÕES APENAS DADOS ----------
+        function lancarDadosApenas() {
+            const d1 = document.getElementById("dado1");
+            const d2 = document.getElementById("dado2");
+            const resultadoEl = document.getElementById("resultado");
+
+            resultadoEl.innerText = "Jogando dados...";
+            d1.style.animation = "girarDado 1s ease";
+            d2.style.animation = "girarDado 1s ease";
+
+            setTimeout(() => {
+                window.valoresDados[0] = randomNumero();
+                window.valoresDados[1] = randomNumero();
+                d1.innerText = window.valoresDados[0];
+                d2.innerText = window.valoresDados[1];
+                d1.style.animation = "";
+                d2.style.animation = "";
+                resultadoEl.innerText = `🎲 Cara → Dado ${window.valoresDados[0]} | 🎲 Coroa → Dado ${window.valoresDados[1]}`;
+            }, 1000);
+        }
+
+        // ---------- FUNÇÕES APENAS MOEDA ----------
+        function lancarMoedaApenas() {
+            const moedaEl = document.getElementById("moeda");
+            const resultadoEl = document.getElementById("resultado");
+
+            resultadoEl.innerText = "Lançando moeda...";
+            moedaEl.style.animation = "girarMoeda 1s ease";
+
+            setTimeout(() => {
+                window.moedaFinal = Math.random() < 0.5 ? "cara" : "coroa";
+                moedaEl.innerText = window.moedaFinal === "cara" ? "😀" : "🦅";
+                moedaEl.style.animation = "";
+                resultadoEl.innerText = `Resultado: ${window.moedaFinal.toUpperCase()}`;
+            }, 1000);
+        }
+
+        // ---------- NAVEGAÇÃO ----------
+        function navigate(path) {
+            window.history.pushState({}, "", path);
+            router();
+        }
+
+        function router() {
+            const path = window.location.pathname;
+            if (path === "/") renderMenu();
+            else if (path === "/dados-e-moeda") renderDadosEMoeda();
+            else if (path === "/dados") renderApenasDados();
+            else if (path === "/moeda") renderApenasMoeda();
+            else renderMenu();
+        }
+
+        window.onpopstate = router;
+
+        // ---------- INICIALIZAÇÃO ----------
+        router();
+    </script>
+</body>
+
+</html>
