@@ -4,102 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>Die & Coin</title>
-    <style>
-        body {
-            margin: 0;
-            background: #2ecc71;
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-
-        .container {
-            text-align: center;
-        }
-
-        .mesa {
-            display: flex;
-            gap: 50px;
-            justify-content: center;
-            margin-bottom: 30px;
-        }
-
-        .dado,
-        .moeda {
-            width: 100px;
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: white;
-            border-radius: 10px;
-            font-size: 40px;
-            font-weight: bold;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
-            transform-style: preserve-3d;
-            transition: transform 1s ease;
-        }
-
-        .moeda {
-            border-radius: 50%;
-            width: 80px;
-            height: 80px;
-        }
-
-        button {
-            padding: 30px 20px;
-            margin: 5px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            background: #27ae60;
-            color: white;
-        }
-
-        button:hover {
-            background: #1e8449;
-        }
-
-        button:disabled {
-            background: #95a5a6;
-            cursor: not-allowed;
-        }
-
-        #resultado {
-            margin-top: 15px;
-            font-size: 20px;
-            font-weight: bold;
-            color: white;
-        }
-
-        .botoes-linha {
-            margin-bottom: 10px;
-        }
-
-        @keyframes girarDado {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(1800deg);
-            }
-        }
-
-        @keyframes girarMoeda {
-            0% {
-                transform: rotateY(0deg);
-            }
-
-            100% {
-                transform: rotateY(1800deg);
-            }
-        }
-    </style>
+    <link href="./styles.css" rel="stylesheet"></link>
 </head>
 
 <body>
@@ -167,12 +72,10 @@
             app.innerHTML = `
     <div class="mesa">
         <div>
-            <div style="padding: 16px;">😀</div>
             <div id="dado1" class="dado">🎲</div>
             </div>
       
             <div>
-                            <div style="padding: 16px;">👑</div>
       <div id="dado2" class="dado">🎲</div>
 
                 
@@ -237,7 +140,7 @@
 
             setTimeout(() => {
                 window.moedaFinal = Math.random() < 0.5 ? "cara" : "coroa";
-                moedaEl.innerText = window.moedaFinal === "cara" ? "😀" : "🦅";
+                moedaEl.innerText = window.moedaFinal === "cara" ? "😀" : "👑";
                 moedaEl.style.animation = "";
                 resultadoEl.innerText =
                     window.moedaFinal === "cara"
@@ -290,7 +193,7 @@
 
             setTimeout(() => {
                 window.moedaFinal = Math.random() < 0.5 ? "cara" : "coroa";
-                moedaEl.innerText = window.moedaFinal === "cara" ? "😀" : "🦅";
+                moedaEl.innerText = window.moedaFinal === "cara" ? "😀" : "👑";
                 moedaEl.style.animation = "";
                 resultadoEl.innerText = `Resultado: ${window.moedaFinal.toUpperCase()}`;
             }, 1000);
